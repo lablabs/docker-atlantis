@@ -12,9 +12,19 @@ env:
 jobs:
   build-image:
     runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        os: [debian, alpine]
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+
+      - name: Get Atlantis version
+        id: atlantis-version
+        shell: bash
+        run: |
+          source ./version.env
+          echo "ATLANTIS_VERSION=$ATLANTIS_VERSION" >> "$GITHUB_OUTPUT"
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
@@ -30,14 +40,6 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Get Atlantis version
-        id: atlantis-version
-        shell: bash
-        run: |
-          source ./version.env
-          echo "ATLANTIS_VERSION=$ATLANTIS_VERSION" >> "$GITHUB_OUTPUT"
-        #  echo "ATLANTIS_VERSION=$(grep "ARG ATLANTIS_VERSION" $DOCKERFILE | cut -d "=" -f2)" >> "$GITHUB_OUTPUT"
-
       - name: Docker meta
         id: meta
         uses: docker/metadata-action@v3
@@ -46,7 +48,7 @@ jobs:
             ghcr.io/lablabs/atlantis
           # generate Docker tags based on the following events/attributes
           tags: |
-            type=raw,value=${{ steps.atlantis-version.outputs.ATLANTIS_VERSION }}-${{ github.event.pull_request.head.sha }}
+            type=raw,value=${{ steps.atlantis-version.outputs.ATLANTIS_VERSION }}-${{ github.event.pull_request.head.sha }}-${{ matrix.os }}
 
       - name: Build image and push to GitHub Container Registry
         uses: docker/build-push-action@v3
@@ -54,7 +56,7 @@ jobs:
           context: .
           build-args: |
             ATLANTIS_VERSION=${{ steps.atlantis-version.outputs.ATLANTIS_VERSION }}
-          file: ./${{ env.DOCKERFILE }}
+          file: ./Dockerfile-${{ matrix.os }}
           platforms: linux/amd64,linux/arm64
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}

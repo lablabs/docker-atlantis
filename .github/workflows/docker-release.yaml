@@ -4,12 +4,17 @@ on:
   push:
     branches:
       - main
+    paths:
+      - "Dockerfile*"
+      - "version.env"
 
 jobs:
-  build-image:
+  tag:
     runs-on: ubuntu-22.04
+    outputs:
+      atlantis_version: ${{ steps.atlantis-version.outputs.ATLANTIS_VERSION }}
+      tag: ${{ steps.tag.outputs.TAG }}
     steps:
-# TODO construct tag, apply tag
       - name: Checkout code
         uses: actions/checkout@v3
 
@@ -21,14 +26,37 @@ jobs:
           echo "ATLANTIS_VERSION=$ATLANTIS_VERSION" >> "$GITHUB_OUTPUT"
 
       - name: Construct tag
+        id: tag
         shell: bash
         run: |
           latest_version_tag=$( git tag --sort=-committerdate -l "${{ steps.atlantis-version.outputs.ATLANTIS_VERSION }}-v*" | head -n 1)
-          if [ -z "$latest_version_tag"] then 
+          if [ -z "$latest_version_tag" ] then 
             tag="${{ steps.atlantis-version.outputs.ATLANTIS_VERSION }}-v1"
             echo $tag
           else 
-            
+            old_suffix=$(echo $latest_version_tag | sed "s/${{ steps.atlantis-version.outputs.ATLANTIS_VERSION }}-v//g")
+            new_suffix=$(($old_suffix+1))
+            tag="${{ steps.atlantis-version.outputs.ATLANTIS_VERSION }}-v$new_suffix"
+          echo "TAG=$tag" >> "$GITHUB_OUTPUT"
+
+      - name: Create push tag
+        run: |
+          git tag ${{ steps.tag.outputs.TAG }}
+          git push origin ${{ steps.tag.outputs.TAG }}
+
+  build-image:
+    needs: tag
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Get Atlantis version
+        id: atlantis-version
+        shell: bash
+        run: |
+          source ./version.env
+          echo "ATLANTIS_VERSION=$ATLANTIS_VERSION" >> "$GITHUB_OUTPUT"
 
       - name: Construct tag
         shell: bash
@@ -56,7 +84,7 @@ jobs:
             ghcr.io/lablabs/atlantis
           # generate Docker tags based on the following events/attributes
           tags: |
-            type=raw,value=${{ steps.atlantis-version.outputs.ATLANTIS_VERSION }}-${{ github.event.pull_request.head.sha }}
+            type=raw,value=${{ needs.tag.outputs.tag }}-${{ matrix.os }}
 
       - name: Build image and push to GitHub Container Registry
         uses: docker/build-push-action@v3
@@ -64,8 +92,11 @@ jobs:
           context: .
           build-args: |
             ATLANTIS_VERSION=${{ steps.atlantis-version.outputs.ATLANTIS_VERSION }}
-          file: ./${{ env.DOCKERFILE }}
+          file: ./Dockerfile-${{ matrix.os }}
           platforms: linux/amd64,linux/arm64
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           push: true
+
+      - name: Image digest
+        run: echo ${{ steps.docker_build.outputs.digest }}
