@@ -41,7 +41,6 @@ jobs:
         uses: docker/metadata-action@v3
         with:
           images: |
-#            lablabs/atlantis
             ghcr.io/lablabs/atlantis
           # generate Docker tags based on the following events/attributes
           tags: |
