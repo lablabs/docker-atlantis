@@ -44,14 +44,14 @@ jobs:
             ghcr.io/lablabs/atlantis
           # generate Docker tags based on the following events/attributes
           tags: |
-            type=raw,value=${{ github.event.pull_request.head.sha }}
+            type=raw,prefix=${{ steps.atlantis-version.outputs.ATLANTIS_VERSION }},value=${{ github.event.pull_request.head.sha }}
 
-      - name: Build image and push to GitHub Container Registry
-        uses: docker/build-push-action@v3
-        with:
-          context: .
-          file: ./$DOCKERFILE
-          platforms: linux/amd64,linux/arm64
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          push: true
+#      - name: Build image and push to GitHub Container Registry
+#        uses: docker/build-push-action@v3
+#        with:
+#          context: .
+#          file: ./${{ end.DOCKERFILE }}
+#          platforms: linux/amd64,linux/arm64
+#          tags: ${{ steps.meta.outputs.tags }}
+#          labels: ${{ steps.meta.outputs.labels }}
+#          push: true
