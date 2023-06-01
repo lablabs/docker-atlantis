@@ -30,13 +30,14 @@ jobs:
         shell: bash
         run: |
           latest_version_tag=$( git tag --sort=-committerdate -l "${{ steps.atlantis-version.outputs.ATLANTIS_VERSION }}-v*" | head -n 1)
-          if [ -z "$latest_version_tag" ] then 
+          if [ -z "$latest_version_tag" ]; then 
             tag="${{ steps.atlantis-version.outputs.ATLANTIS_VERSION }}-v1"
-            echo $tag
           else 
             old_suffix=$(echo $latest_version_tag | sed "s/${{ steps.atlantis-version.outputs.ATLANTIS_VERSION }}-v//g")
             new_suffix=$(($old_suffix+1))
             tag="${{ steps.atlantis-version.outputs.ATLANTIS_VERSION }}-v$new_suffix"
+          fi
+          echo $tag
           echo "TAG=$tag" >> "$GITHUB_OUTPUT"
 
       - name: Create push tag
