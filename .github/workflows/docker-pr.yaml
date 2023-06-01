@@ -5,8 +5,9 @@ on:
     branches:
       - 'main'
     paths:
-      - "Dockerfile*"
-      - "version.env"
+      - 'Dockerfile*'
+      - 'version.env'
+      - '.github/workflows/**'
 
 env:
   DOCKERFILE_TAG: ${{ github.event.pull_request.head.sha }}

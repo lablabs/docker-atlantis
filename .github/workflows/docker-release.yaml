@@ -1,4 +1,4 @@
-name: Build and Publish Docker Images after create release tag
+name: Build and publish Docker images
 
 on:
   push:
@@ -7,6 +7,7 @@ on:
     paths:
       - 'Dockerfile*'
       - 'version.env'
+      - '.github/workflows/**'
 
 jobs:
   tag:
