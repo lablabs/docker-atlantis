@@ -1,0 +1,105 @@
+name: Build and publish Docker images
+
+on:
+  push:
+    branches:
+      - 'main'
+    paths:
+      - 'Dockerfile*'
+      - 'version.env'
+      - '.github/workflows/**'
+
+jobs:
+  tag:
+    runs-on: ubuntu-22.04
+    outputs:
+      TAG: ${{ steps.tag.outputs.TAG }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Get Atlantis version
+        id: atlantis-version
+        shell: bash
+        run: |
+          source ./version.env
+          echo "ATLANTIS_VERSION=$ATLANTIS_VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Construct tag
+        id: tag
+        shell: bash
+        run: |
+          latest_version_tag=$( git tag --sort=-committerdate -l "${{ steps.atlantis-version.outputs.ATLANTIS_VERSION }}-v*" | head -n 1)
+          if [ -z "$latest_version_tag" ]; then 
+            tag="${{ steps.atlantis-version.outputs.ATLANTIS_VERSION }}-v1"
+          else 
+            old_suffix=$(echo $latest_version_tag | sed "s/${{ steps.atlantis-version.outputs.ATLANTIS_VERSION }}-v//g")
+            new_suffix=$(($old_suffix+1))
+            tag="${{ steps.atlantis-version.outputs.ATLANTIS_VERSION }}-v$new_suffix"
+          fi
+          echo $tag
+          echo "TAG=$tag" >> "$GITHUB_OUTPUT"
+
+      - name: Create push tag
+        run: |
+          git tag ${{ steps.tag.outputs.TAG }}
+          git push origin ${{ steps.tag.outputs.TAG }}
+
+  build-image:
+    needs: tag
+    runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        os:
+          - debian
+         # - alpine
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Get Atlantis version
+        id: atlantis-version
+        shell: bash
+        run: |
+          source ./version.env
+          echo "ATLANTIS_VERSION=$ATLANTIS_VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Login to Github Packages
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v3
+        with:
+          images: |
+            ghcr.io/lablabs/atlantis
+          # generate Docker tags based on the following events/attributes
+          tags: |
+            type=raw,value=${{ needs.tag.outputs.TAG }}-${{ matrix.os }}
+            type=raw,value=${{ steps.atlantis-version.outputs.ATLANTIS_VERSION }}-latest-${{ matrix.os }}
+
+      - name: Build image and push to GitHub Container Registry
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          build-args: |
+            ATLANTIS_VERSION=${{ steps.atlantis-version.outputs.ATLANTIS_VERSION }}
+          file: ./Dockerfile-${{ matrix.os }}
+          platforms: linux/amd64,linux/arm64
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          push: true
+
+      - name: Image digest
+        run: echo ${{ steps.docker_build.outputs.digest }}
