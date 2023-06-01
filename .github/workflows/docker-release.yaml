@@ -3,10 +3,10 @@ name: Build and Publish Docker Images after create release tag
 on:
   push:
     branches:
-      - main
+      - 'main'
     paths:
-      - "Dockerfile*"
-      - "version.env"
+      - 'Dockerfile*'
+      - 'version.env'
 
 jobs:
   tag:
