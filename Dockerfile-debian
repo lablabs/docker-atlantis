@@ -15,4 +15,3 @@ RUN rm -rf ./aws
 
 # Install Infracost
 RUN curl -fsSL https://raw.githubusercontent.com/infracost/infracost/$INFRACOST_VERSION/scripts/install.sh | sh
-
