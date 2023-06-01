@@ -4,6 +4,9 @@ on:
   pull_request:
     branches:
       - 'main'
+    paths:
+      - "Dockerfile*"
+      - "version.env"
 
 env:
   DOCKERFILE_TAG: ${{ github.event.pull_request.head.sha }}
