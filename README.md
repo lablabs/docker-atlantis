@@ -1,5 +1,5 @@
 # docker-atlantis
-Custom Atlantis Docker image repository.
+Custom [Atlantis](https://github.com/runatlantis/atlantis) Docker image repository.
 
 This repository maintains a custom Atlantis Docker image. 
 Extra functionality:
