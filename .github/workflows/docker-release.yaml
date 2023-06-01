@@ -12,8 +12,7 @@ jobs:
   tag:
     runs-on: ubuntu-22.04
     outputs:
-      atlantis_version: ${{ steps.atlantis-version.outputs.ATLANTIS_VERSION }}
-      tag: ${{ steps.tag.outputs.TAG }}
+      TAG: ${{ steps.tag.outputs.TAG }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -47,6 +46,11 @@ jobs:
   build-image:
     needs: tag
     runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        os:
+          - debian
+         # - alpine
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -57,10 +61,6 @@ jobs:
         run: |
           source ./version.env
           echo "ATLANTIS_VERSION=$ATLANTIS_VERSION" >> "$GITHUB_OUTPUT"
-
-      - name: Construct tag
-        shell: bash
-        run: |
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
@@ -84,7 +84,8 @@ jobs:
             ghcr.io/lablabs/atlantis
           # generate Docker tags based on the following events/attributes
           tags: |
-            type=raw,value=${{ needs.tag.outputs.tag }}-${{ matrix.os }}
+            type=raw,value=${{ needs.tag.outputs.TAG }}-${{ matrix.os }}
+            type=raw,value=latest-${{ matrix.os }}
 
       - name: Build image and push to GitHub Container Registry
         uses: docker/build-push-action@v3

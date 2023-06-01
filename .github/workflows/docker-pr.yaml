@@ -14,7 +14,9 @@ jobs:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        os: [debian, alpine]
+        os:
+          - debian
+         # - alpine
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -49,6 +51,7 @@ jobs:
           # generate Docker tags based on the following events/attributes
           tags: |
             type=raw,value=${{ steps.atlantis-version.outputs.ATLANTIS_VERSION }}-${{ github.event.pull_request.head.sha }}-${{ matrix.os }}
+            type=raf,value=${{ steps.atlantis-version.outputs.ATLANTIS_VERSION }}-pr${{ github.event.number }}-${{ matrix.os }}
 
       - name: Build image and push to GitHub Container Registry
         uses: docker/build-push-action@v3
