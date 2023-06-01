@@ -85,7 +85,7 @@ jobs:
           # generate Docker tags based on the following events/attributes
           tags: |
             type=raw,value=${{ needs.tag.outputs.TAG }}-${{ matrix.os }}
-            type=raw,value=latest-${{ matrix.os }}
+            type=raw,value=${{ steps.atlantis-version.outputs.ATLANTIS_VERSION }}-latest-${{ matrix.os }}
 
       - name: Build image and push to GitHub Container Registry
         uses: docker/build-push-action@v3
