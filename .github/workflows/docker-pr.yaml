@@ -10,8 +10,6 @@ env:
   DOCKERFILE: Dockerfile-debian
 
 jobs:
-  get-distros:
-
   build-image:
     runs-on: ubuntu-22.04
     steps:
