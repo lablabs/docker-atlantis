@@ -15,7 +15,7 @@ Only **debian** is automatically built for now (alpine takes too long to build).
 
 ## Tagging strategy
 - PR
-  - `<$atlantis-version>-pr<$PR-number>-<$os>`, e.g. `v0.24.1-pr2-debian`
+  - `<$atlantis-version>-pr<$PR-number>-alpha-<$os>`, e.g. `v0.24.1-pr2-alpha-debian`
   - `<$atlantis-version>-<commit-sha>-<$os>`, e.g. `v0.24.1-23523572395472943572934552452352-debian`
 - main
   - `<$atlantis-version>-latest-<$os>`, e.g. `v0.24.1-latest-debian`
