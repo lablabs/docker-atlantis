@@ -10,6 +10,8 @@ env:
   DOCKERFILE: Dockerfile-debian
 
 jobs:
+  get-distros:
+
   build-image:
     runs-on: ubuntu-22.04
     steps:
@@ -34,7 +36,9 @@ jobs:
         id: atlantis-version
         shell: bash
         run: |
-          echo "ATLANTIS_VERSION=$(grep "ARG ATLANTIS_VERSION" $DOCKERFILE | cut -d "=" -f2)" >> "$GITHUB_OUTPUT"
+          source ./version.env
+          echo "ATLANTIS_VERSION=$ATLANTIS_VERSION" >> "$GITHUB_OUTPUT"
+        #  echo "ATLANTIS_VERSION=$(grep "ARG ATLANTIS_VERSION" $DOCKERFILE | cut -d "=" -f2)" >> "$GITHUB_OUTPUT"
 
       - name: Docker meta
         id: meta
@@ -50,6 +54,8 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           context: .
+          build-args: |
+            ATLANTIS_VERSION=${{ steps.atlantis-version.outputs.ATLANTIS_VERSION }}
           file: ./${{ env.DOCKERFILE }}
           platforms: linux/amd64,linux/arm64
           tags: ${{ steps.meta.outputs.tags }}
