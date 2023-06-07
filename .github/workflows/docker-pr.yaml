@@ -29,7 +29,7 @@ jobs:
         uses: hadolint/hadolint-action@v3.1.0
         with:
           dockerfile: "./Dockerfile-${{ matrix.os }}"
-          failure-threshold: warning
+          failure-threshold: error
 
       - name: Get Atlantis version
         id: atlantis-version
