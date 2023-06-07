@@ -18,11 +18,11 @@ Only **debian** image is automatically built for now (**alpine** ARM build is fa
 Deploy Atlantis according to the official guide https://www.runatlantis.io/docs/deployment.html.
 
 Available custom Atlantis Docker images are located here https://github.com/lablabs/docker-atlantis/pkgs/container/atlantis.
-- Latest debian image for specific Atlantis version:
+- Latest release debian image for specific Atlantis version:
 ```shell
 ghcr.io/lablabs/atlantis:<$atlantis-version>-latest-debian
 ```
-- Specific released version:
+- Specific released debian version:
 ```shell
 ghcr.io/lablabs/atlantis:<$atlantis-version>-v<$release-version>-debian
 ```
@@ -34,7 +34,7 @@ ghcr.io/lablabs/atlantis:<$atlantis-version>-v<$release-version>-debian
 - main
   - `<$atlantis-version>-latest-<$os>`, e.g. `v0.24.1-latest-debian`
   - `<$atlantis-version>-v<$release-version>-<$os>`, e.g. `v0.24.1-v2-debian`
-    - `<$single-number-version>` is incremented +1 with each non-Atlantis version change to the Dockerfile
+    - `<$release-version>` is incremented +1 with each non-Atlantis version change to the Dockerfile
 
 ## Contribute
 Check [.github/CONTRIBUTING.md](.github/CONTRIBUTING.md) for guideline on how to contribute.
