@@ -5,12 +5,13 @@ ARG AWS_CLI_VERSION=2.11.19
 ARG INFRACOST_VERSION=v0.10.22
 
 # Install AWS CLI
-RUN apt install unzip
-RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64-$AWS_CLI_VERSION.zip" -o "awscliv2.zip"
-RUN unzip awscliv2.zip
-RUN ./aws/install
-RUN rm awscliv2.zip
-RUN rm -rf ./aws
+RUN apt-get install unzip
+
+RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64-$AWS_CLI_VERSION.zip" -o "awscliv2.zip" \
+    && unzip awscliv2.zip \
+    && ./aws/install \
+    && rm awscliv2.zip \
+    && rm -rf ./aws
 
 # Install Infracost
 RUN curl -fsSL https://raw.githubusercontent.com/infracost/infracost/$INFRACOST_VERSION/scripts/install.sh | sh
