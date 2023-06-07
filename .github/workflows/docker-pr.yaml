@@ -6,11 +6,10 @@ on:
       - 'main'
     paths:
       - 'Dockerfile*'
-      - 'version.env'
+      - 'version'
 
 env:
   DOCKERFILE_TAG: ${{ github.event.pull_request.head.sha }}
-  DOCKERFILE: Dockerfile-debian
 
 jobs:
   build-image:
@@ -35,8 +34,7 @@ jobs:
         id: atlantis-version
         shell: bash
         run: |
-          source ./version.env
-          echo "ATLANTIS_VERSION=$ATLANTIS_VERSION" >> "$GITHUB_OUTPUT"
+          echo "ATLANTIS_VERSION=$(cat version)" >> "$GITHUB_OUTPUT"
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2

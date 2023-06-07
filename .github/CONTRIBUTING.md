@@ -6,7 +6,7 @@ Please note we have a code of conduct, please follow it in all your interactions
 
 ## Pull Request Process
 
-1. Modify `Dockerfile` or `version.env`. `version.env` contains the base Atlantis version.
+1. Modify `Dockerfile` or `version`. `version` contains the base Atlantis version.
 2. Create PR, which trigger the docker-pr.yaml workflow.
 3. After approvals and testing, PR will be merged and built images and commit automatically tagged
 
