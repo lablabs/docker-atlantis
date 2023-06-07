@@ -7,7 +7,6 @@ on:
     paths:
       - 'Dockerfile*'
       - 'version.env'
-      - '.github/workflows/**'
 
 jobs:
   tag:
@@ -32,24 +31,29 @@ jobs:
         shell: bash
         run: |
           latest_version_tag=$(git describe --tags --match="${{ steps.atlantis-version.outputs.ATLANTIS_VERSION }}-v*" --abbrev=0 --always HEAD)
-          
-          if [[ $latest_version_tag =~ ^${{ steps.atlantis-version.outputs.ATLANTIS_VERSION }}-v* ]]; then 
+
+          if [[ $latest_version_tag =~ ^${{ steps.atlantis-version.outputs.ATLANTIS_VERSION }}-v* ]]; then
             echo "A tag $latest_version_tag exists for this Atlantis version. Incrementing..."
             old_suffix=$(echo $latest_version_tag | sed "s/${{ steps.atlantis-version.outputs.ATLANTIS_VERSION }}-v//g")
             new_suffix=$(($old_suffix+1))
             tag="${{ steps.atlantis-version.outputs.ATLANTIS_VERSION }}-v$new_suffix"
-          else 
+          else
             echo "No tag exists for this Atlantis version. Creating new v1 tag..."
             tag="${{ steps.atlantis-version.outputs.ATLANTIS_VERSION }}-v1"
           fi
-          
-          echo "New tag: $tag" 
+
+          echo "New tag: $tag"
           echo "TAG=$tag" >> "$GITHUB_OUTPUT"
 
-      - name: Create push tag
+      - name: Push tag
         run: |
           git tag ${{ steps.tag.outputs.TAG }}
           git push origin ${{ steps.tag.outputs.TAG }}
+
+      - name: Create GitHub release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release create ${{ steps.tag.outputs.TAG }} --generate-notes --draft
 
   build-image:
     needs: tag
