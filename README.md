@@ -36,7 +36,12 @@ ghcr.io/lablabs/atlantis:<$atlantis-version>-v<$release-version>-debian
   - `<$atlantis-version>-v<$release-version>-<$os>`, e.g. `v0.24.1-v2-debian`
     - `<$release-version>` is incremented +1 with each non-Atlantis version change to the Dockerfile
 
-## Contribute
+## How to update
+1. Modify `version.env` if you want to try a new Atlantis version
+2. Make other changes you want
+3. Create a PR.
+
+## Contributing
 Check [.github/CONTRIBUTING.md](.github/CONTRIBUTING.md) for guideline on how to contribute.
 
 ## License
