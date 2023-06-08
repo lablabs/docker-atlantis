@@ -21,3 +21,4 @@ COPY --from=infracost /tmp/install.sh /tmp/infracost-install.sh
 RUN sh /tmp/infracost-install.sh \
     && rm /tmp/infracost-install.sh \
     && infracost --version
+
