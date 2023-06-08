@@ -8,9 +8,6 @@ on:
       - 'Dockerfile*'
       - 'version'
 
-env:
-  DOCKERFILE_TAG: ${{ github.event.pull_request.head.sha }}
-
 jobs:
   build-image:
     runs-on: ubuntu-22.04
