@@ -14,6 +14,7 @@ RUN /tmp/aws/install \
 
 # Install Infracost
 # hadolint ignore=DL4006
+ARG INFRACOST_VERSION=v0.10.22
 RUN curl -fsSL https://raw.githubusercontent.com/infracost/infracost/$INFRACOST_VERSION/scripts/install.sh | sh
 RUN infracost --version
 
