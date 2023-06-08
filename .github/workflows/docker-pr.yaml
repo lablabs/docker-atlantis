@@ -67,6 +67,7 @@ jobs:
           context: .
           build-args: |
             ATLANTIS_VERSION=${{ steps.atlantis-version.outputs.ATLANTIS_VERSION }}
+            BLA=blabla
           file: ./Dockerfile-${{ matrix.os }}
           platforms: linux/amd64,linux/arm64
           tags: ${{ steps.meta.outputs.tags }}
