@@ -1,7 +1,6 @@
 ARG ATLANTIS_VERSION
 
 # Download AWS CLI
-# hadolint ignore=DL3008
 FROM curlimages/curl:8.1.1 as awscli
 ARG AWSCLI_VERSION=2.11.19
 RUN curl -sSL "https://awscli.amazonaws.com/awscli-exe-linux-$(arch)-${AWSCLI_VERSION}.zip" -o "/tmp/awscli.zip" && \
@@ -10,7 +9,6 @@ RUN curl -sSL "https://awscli.amazonaws.com/awscli-exe-linux-$(arch)-${AWSCLI_VE
 # Download Infracost
 FROM curlimages/curl:8.1.1 as infracost
 ARG INFRACOST_VERSION=v0.10.22
-# hadolint ignore=DL4006
 RUN curl -fsSL "https://raw.githubusercontent.com/infracost/infracost/${INFRACOST_VERSION}/scripts/install.sh" -o "/tmp/install.sh"
 
 FROM ghcr.io/runatlantis/atlantis:${ATLANTIS_VERSION}-debian
