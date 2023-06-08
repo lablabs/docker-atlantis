@@ -11,7 +11,7 @@ RUN curl -sSL "https://awscli.amazonaws.com/awscli-exe-linux-$(arch)-${AWSCLI_VE
 FROM curlimages/curl:8.1.1 as infracost
 ARG INFRACOST_VERSION=v0.10.22
 # hadolint ignore=DL4006
-RUN curl -fsSL "https://raw.githubusercontent.com/infracost/infracost/${INFRACOST_VERSION}/scripts/install.sh" | sh
+RUN curl -fsSL "https://raw.githubusercontent.com/infracost/infracost/${INFRACOST_VERSION}/scripts/install.sh" -o "/tmp/install.sh"
 
 FROM ghcr.io/runatlantis/atlantis:${ATLANTIS_VERSION}-debian
 COPY --from=awscli /tmp/aws /tmp/aws
@@ -19,5 +19,7 @@ RUN /tmp/aws/install \
     && rm -rf /tmp/aws \
     && aws --version
 
-COPY --from=infracost /usr/local/bin/infracost /usr/local/bin/infracost
-RUN infracost --version
+COPY --from=infracost /tmp/install.sh /tmp/infracost-install.sh
+RUN sh /tmp/infracost-install.sh \
+    && rm /tmp/infracost-install.sh \
+    && infracost --version
