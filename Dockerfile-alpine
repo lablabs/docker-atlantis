@@ -32,5 +32,3 @@ COPY --from=builder /aws-cli-bin/ /usr/local/bin/
 # Install Infracost
 ARG INFRACOST_VERSION=v0.10.22
 RUN curl -fsSL https://raw.githubusercontent.com/infracost/infracost/$INFRACOST_VERSION/scripts/install.sh | sh
-
-

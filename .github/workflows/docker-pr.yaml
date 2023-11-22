@@ -6,12 +6,7 @@ on:
       - 'main'
     paths:
       - 'Dockerfile*'
-      - 'version.env'
-      - '.github/workflows/**'
-
-env:
-  DOCKERFILE_TAG: ${{ github.event.pull_request.head.sha }}
-  DOCKERFILE: Dockerfile-debian
+      - 'version'
 
 jobs:
   build-image:
@@ -25,12 +20,18 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: Lint Dockerfile
+        id: hadolint
+        uses: hadolint/hadolint-action@v3.1.0
+        with:
+          dockerfile: "./Dockerfile-${{ matrix.os }}"
+          failure-threshold: warning
+
       - name: Get Atlantis version
         id: atlantis-version
         shell: bash
         run: |
-          source ./version.env
-          echo "ATLANTIS_VERSION=$ATLANTIS_VERSION" >> "$GITHUB_OUTPUT"
+          echo "ATLANTIS_VERSION=$(cat version)" >> "$GITHUB_OUTPUT"
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
