@@ -3,12 +3,15 @@ ARG ATLANTIS_VERSION
 # Download AWS CLI
 FROM curlimages/curl:8.14.1 as awscli
   ARG AWSCLI_VERSION=2.27.4
-USER 1001:1001
 RUN curl -sSL "https://awscli.amazonaws.com/awscli-exe-linux-$(arch)-${AWSCLI_VERSION}.zip" -o "/tmp/awscli.zip" && \
     unzip /tmp/awscli.zip -d /tmp
+RUN ls -ltr /tmp
+RUN ls -ltr /tmp/aws
 
 FROM ghcr.io/runatlantis/atlantis:${ATLANTIS_VERSION}-debian
 COPY --from=awscli /tmp/aws /tmp/aws
+RUN ls -ltr /tmp
+RUN ls -ltr /tmp/aws
 RUN /tmp/aws/install -i ~/.local/aws-cli -b ~/.local/bin \
     && rm -rf /tmp/aws \
     && aws --version
