@@ -2,22 +2,20 @@ ARG ATLANTIS_VERSION
 
 # Download AWS CLI
 FROM curlimages/curl:8.14.1 as awscli
-ARG AWSCLI_VERSION=2.27.4
-# RUN curl -sSL "https://awscli.amazonaws.com/awscli-exe-linux-$(arch)-${AWSCLI_VERSION}.zip" -o "/tmp/awscli.zip" && \
-    # unzip /tmp/awscli.zip -d /tmp \
+  ARG AWSCLI_VERSION=2.27.4
+RUN curl -sSL "https://awscli.amazonaws.com/awscli-exe-linux-$(arch)-${AWSCLI_VERSION}.zip" -o "/tmp/awscli.zip" && \
+    unzip /tmp/awscli.zip -d /tmp
+RUN chmod -R 777 /tmp/aws
+RUN ls -ltr /tmp
+RUN ls -ltr /tmp/aws
 
 FROM ghcr.io/runatlantis/atlantis:${ATLANTIS_VERSION}-debian
-
-RUN apt-get update && apt-get install -y \
-    curl=8.14.1 \
-    && curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "/tmp/awscliv2.zip" \
-    && unzip /tmp/awscliv2.zip -d /tmp \
-    && /tmp/aws/install \
-    && rm -rf /tmp/aws /tmp/awscliv2.zip \
-    && aws --version \
-    && apt-get remove --purge -y curl unzip \
-    && apt-get autoremove -y \
-    && apt-get clean 
+COPY --from=awscli /tmp/aws /tmp/aws
+RUN /tmp/aws/install -i ~/.local/aws-cli -b ~/.local/bin \
+    && ls -ltr /tmp \
+    && ls -ltr /tmp/aws \
+    && rm -rf /tmp/aws \
+    && aws --version
 
 # Install Infracost
 ARG INFRACOST_VERSION=v0.10.41
