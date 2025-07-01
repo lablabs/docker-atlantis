@@ -10,7 +10,7 @@ FROM ghcr.io/runatlantis/atlantis:${ATLANTIS_VERSION}-debian
 USER root
 COPY --from=awscli /tmp/aws /tmp/aws
 RUN /tmp/aws/install \
-    # && rm -rf /tmp/aws \  # TODO: permissions issues, techical debt, fix later
+    && rm -rf /tmp/aws \  
     && ~/.local/bin/aws --version
 
 # Install Infracost
