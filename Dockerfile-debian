@@ -11,7 +11,7 @@ USER root
 COPY --from=awscli /tmp/aws /tmp/aws
 RUN /tmp/aws/install \
     && rm -rf /tmp/aws \  
-    && ~/.local/bin/aws --version
+    && aws --version
 
 # Install Infracost
 ARG INFRACOST_VERSION=v0.10.41
