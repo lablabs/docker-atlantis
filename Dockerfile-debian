@@ -8,7 +8,7 @@ RUN curl -sSL "https://awscli.amazonaws.com/awscli-exe-linux-$(arch)-${AWSCLI_VE
 
 FROM ghcr.io/runatlantis/atlantis:${ATLANTIS_VERSION}-debian
 COPY --from=awscli /tmp/aws /tmp/aws
-RUN /tmp/aws/install \
+RUN /tmp/aws/install -i ~/.local/aws-cli -b ~/.local/bin \
     && rm -rf /tmp/aws \
     && aws --version
 
