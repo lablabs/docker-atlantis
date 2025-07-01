@@ -10,9 +10,9 @@ RUN ls -ltr /tmp/aws
 
 FROM ghcr.io/runatlantis/atlantis:${ATLANTIS_VERSION}-debian
 COPY --from=awscli /tmp/aws /tmp/aws
-RUN ls -ltr /tmp
-RUN ls -ltr /tmp/aws
 RUN /tmp/aws/install -i ~/.local/aws-cli -b ~/.local/bin \
+    && RUN ls -ltr /tmp
+    && RUN ls -ltr /tmp/aws
     && rm -rf /tmp/aws \
     && aws --version
 
