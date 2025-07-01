@@ -1,19 +1,20 @@
 ARG ATLANTIS_VERSION
 
 # Download AWS CLI
-FROM curlimages/curl:8.1.1 as awscli
-ARG AWSCLI_VERSION=2.11.19
+FROM curlimages/curl:8.14.1 as awscli
+  ARG AWSCLI_VERSION=2.27.4
 RUN curl -sSL "https://awscli.amazonaws.com/awscli-exe-linux-$(arch)-${AWSCLI_VERSION}.zip" -o "/tmp/awscli.zip" && \
     unzip /tmp/awscli.zip -d /tmp
 
 FROM ghcr.io/runatlantis/atlantis:${ATLANTIS_VERSION}-debian
+USER root
 COPY --from=awscli /tmp/aws /tmp/aws
 RUN /tmp/aws/install \
-    && rm -rf /tmp/aws \
+    && rm -rf /tmp/aws \  
     && aws --version
 
 # Install Infracost
-ARG INFRACOST_VERSION=v0.10.22
+ARG INFRACOST_VERSION=v0.10.41
 # hadolint ignore=DL4006
 RUN curl -fsSL https://raw.githubusercontent.com/infracost/infracost/$INFRACOST_VERSION/scripts/install.sh | sh
 RUN infracost --version
