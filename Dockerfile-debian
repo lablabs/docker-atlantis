@@ -10,7 +10,7 @@ FROM ghcr.io/runatlantis/atlantis:${ATLANTIS_VERSION}-debian
 COPY --from=awscli /tmp/aws /tmp/aws
 RUN /tmp/aws/install -i ~/.local/aws-cli -b ~/.local/bin \
     # && rm -rf /tmp/aws \  # TODO: permissions issues, techical debt, fix later
-    && aws --version
+    && ~/.local/bin/aws --version
 
 # Install Infracost
 ARG INFRACOST_VERSION=v0.10.41
