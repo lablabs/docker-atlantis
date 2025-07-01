@@ -7,7 +7,7 @@ RUN curl -sSL "https://awscli.amazonaws.com/awscli-exe-linux-$(arch)-${AWSCLI_VE
     unzip /tmp/awscli.zip -d /tmp
 
 FROM ghcr.io/runatlantis/atlantis:${ATLANTIS_VERSION}-debian
-USER ROOT
+USER root
 COPY --from=awscli /tmp/aws /tmp/aws
 RUN /tmp/aws/install \
     # && rm -rf /tmp/aws \  # TODO: permissions issues, techical debt, fix later
