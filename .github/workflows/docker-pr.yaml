@@ -26,6 +26,7 @@ jobs:
         with:
           dockerfile: "./Dockerfile-${{ matrix.os }}"
           failure-threshold: warning
+          ignore: DL3002  # "Use USER to change the default user"
 
       - name: Get Atlantis version
         id: atlantis-version
